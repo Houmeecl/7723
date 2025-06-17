@@ -1,30 +1,289 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>DocuSignPro - Plataforma de Firma de Documentos</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NotaryVecino - Plataforma de Notarización Digital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-      :root {
-        --font-heading: 'Montserrat', sans-serif;
-        --font-body: 'Open Sans', sans-serif;
-      }
-      body {
-        font-family: var(--font-body);
-      }
-      h1, h2, h3, h4, h5, h6 {
-        font-family: var(--font-heading);
-      }
+        body { font-family: 'Inter', sans-serif; }
     </style>
-    <script type="module" crossorigin src="/assets/index-BPC64rrb.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-tn0RQdqM.css">
-  </head>
-  <body>
-    <div id="root"></div>
-    <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
-    <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
-  </body>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-stamp text-blue-600 text-2xl mr-3"></i>
+                    <h1 class="text-xl font-bold text-gray-900">NotaryVecino</h1>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Inicio</a>
+                    <a href="#" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Servicios</a>
+                    <a href="#" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Vecinos</a>
+                    <a href="#" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Contacto</a>
+                </nav>
+                <div class="flex items-center space-x-4">
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                        Iniciar Sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6">
+                    Notarización Digital
+                    <span class="block text-blue-200">Segura y Confiable</span>
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto">
+                    Plataforma integral para notarización electrónica, firma digital avanzada y servicios notariales en línea
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition duration-200">
+                        <i class="fas fa-play mr-2"></i>
+                        Comenzar Ahora
+                    </button>
+                    <button class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition duration-200">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Más Información
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    Servicios Principales
+                </h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    Ofrecemos una gama completa de servicios notariales digitales con la máxima seguridad y validez legal
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Notarización Digital -->
+                <div class="bg-gray-50 p-8 rounded-xl hover:shadow-lg transition duration-200">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-certificate text-blue-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Notarización Digital</h3>
+                    <p class="text-gray-600 mb-4">
+                        Notarización de documentos con validez legal completa, utilizando tecnología blockchain y firma electrónica avanzada.
+                    </p>
+                    <a href="#" class="text-blue-600 font-medium hover:text-blue-700">
+                        Más información <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+
+                <!-- Firma Electrónica -->
+                <div class="bg-gray-50 p-8 rounded-xl hover:shadow-lg transition duration-200">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-signature text-green-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Firma Electrónica Avanzada</h3>
+                    <p class="text-gray-600 mb-4">
+                        Firma documentos con validez legal equivalente a la firma manuscrita, cumpliendo con la Ley 19.799.
+                    </p>
+                    <a href="#" class="text-green-600 font-medium hover:text-green-700">
+                        Más información <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+
+                <!-- VecinoXpress -->
+                <div class="bg-gray-50 p-8 rounded-xl hover:shadow-lg transition duration-200">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-store text-purple-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">VecinoXpress</h3>
+                    <p class="text-gray-600 mb-4">
+                        Red de socios comerciales que ofrecen servicios notariales en tiendas de barrio cercanas a ti.
+                    </p>
+                    <a href="#" class="text-purple-600 font-medium hover:text-purple-700">
+                        Más información <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+
+                <!-- Verificación de Identidad -->
+                <div class="bg-gray-50 p-8 rounded-xl hover:shadow-lg transition duration-200">
+                    <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-id-card text-red-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Verificación de Identidad</h3>
+                    <p class="text-gray-600 mb-4">
+                        Verificación biométrica y documental con tecnología NFC y reconocimiento facial avanzado.
+                    </p>
+                    <a href="#" class="text-red-600 font-medium hover:text-red-700">
+                        Más información <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+
+                <!-- Gestión de Documentos -->
+                <div class="bg-gray-50 p-8 rounded-xl hover:shadow-lg transition duration-200">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-folder-open text-yellow-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Gestión de Documentos</h3>
+                    <p class="text-gray-600 mb-4">
+                        Almacenamiento seguro, organización y acceso a todos tus documentos notarizados desde cualquier lugar.
+                    </p>
+                    <a href="#" class="text-yellow-600 font-medium hover:text-yellow-700">
+                        Más información <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+
+                <!-- Pagos Integrados -->
+                <div class="bg-gray-50 p-8 rounded-xl hover:shadow-lg transition duration-200">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-credit-card text-indigo-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Pagos Integrados</h3>
+                    <p class="text-gray-600 mb-4">
+                        Sistema de pagos seguro con múltiples opciones: tarjetas, transferencias y pagos en efectivo.
+                    </p>
+                    <a href="#" class="text-indigo-600 font-medium hover:text-indigo-700">
+                        Más información <i class="fas fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Status Section -->
+    <section class="py-16 bg-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Estado del Sistema</h2>
+                <p class="text-gray-600">Monitoreo en tiempo real de nuestros servicios</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-gray-900">API Server</h3>
+                        <div class="w-3 h-3 bg-green-500 rounded-full" id="server-status"></div>
+                    </div>
+                    <p class="text-sm text-gray-600" id="server-message">Verificando...</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-gray-900">Base de Datos</h3>
+                        <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    </div>
+                    <p class="text-sm text-gray-600">Conectando...</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-gray-900">Servicios de Firma</h3>
+                        <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    </div>
+                    <p class="text-sm text-gray-600">Inicializando...</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-gray-900">Red VecinoXpress</h3>
+                        <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    </div>
+                    <p class="text-sm text-gray-600">Activo</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-stamp text-blue-400 text-2xl mr-3"></i>
+                        <h3 class="text-xl font-bold">NotaryVecino</h3>
+                    </div>
+                    <p class="text-gray-400">
+                        Plataforma líder en notarización digital y servicios notariales en línea en Chile.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Servicios</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Notarización Digital</a></li>
+                        <li><a href="#" class="hover:text-white">Firma Electrónica</a></li>
+                        <li><a href="#" class="hover:text-white">Verificación de Identidad</a></li>
+                        <li><a href="#" class="hover:text-white">VecinoXpress</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Empresa</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Acerca de</a></li>
+                        <li><a href="#" class="hover:text-white">Contacto</a></li>
+                        <li><a href="#" class="hover:text-white">Términos de Servicio</a></li>
+                        <li><a href="#" class="hover:text-white">Política de Privacidad</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold mb-4">Contacto</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><i class="fas fa-envelope mr-2"></i> info@notaryvecino.cl</li>
+                        <li><i class="fas fa-phone mr-2"></i> +56 2 2345 6789</li>
+                        <li><i class="fas fa-map-marker-alt mr-2"></i> Santiago, Chile</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 NotaryVecino. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Check server status
+        async function checkServerStatus() {
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                
+                const statusElement = document.getElementById('server-status');
+                const messageElement = document.getElementById('server-message');
+                
+                if (data.status === 'ok') {
+                    statusElement.className = 'w-3 h-3 bg-green-500 rounded-full';
+                    messageElement.textContent = 'Operativo';
+                } else {
+                    statusElement.className = 'w-3 h-3 bg-red-500 rounded-full';
+                    messageElement.textContent = 'Error';
+                }
+            } catch (error) {
+                const statusElement = document.getElementById('server-status');
+                const messageElement = document.getElementById('server-message');
+                statusElement.className = 'w-3 h-3 bg-red-500 rounded-full';
+                messageElement.textContent = 'Sin conexión';
+            }
+        }
+        
+        // Check status on page load
+        checkServerStatus();
+        
+        // Check status every 30 seconds
+        setInterval(checkServerStatus, 30000);
+    </script>
+</body>
 </html>
