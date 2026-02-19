@@ -108,6 +108,11 @@ import WebAppPOS from "@/pages/partners/webapp-pos";
 import SdkDemo from "@/pages/partners/sdk-demo";
 import WebAppPOSOfficial from "@/pages/partners/webapp-pos-official";
 
+// ESG – Contabilidad Ambiental
+import EsgDashboard from "@/pages/esg-dashboard";
+import EsgUpload from "@/pages/esg-upload";
+import EsgCarbonFootprint from "@/pages/esg-carbon-footprint";
+
 // Admin pages
 import PosManagementPage from "@/pages/admin/pos-management";
 import ApiIntegrationsPage from "@/pages/admin/api-integrations";
@@ -1059,6 +1064,11 @@ function Router() {
           </Suspense>
         );
       }} />
+
+      {/* ESG – Contabilidad Ambiental */}
+      <Route path="/esg" component={EsgDashboard} />
+      <Route path="/esg/upload" component={EsgUpload} />
+      <Route path="/esg/carbon-footprint" component={EsgCarbonFootprint} />
 
       {/* Fallback to 404 */}
       <Route component={NotFound} />
