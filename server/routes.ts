@@ -21,6 +21,8 @@ import { posManagementRouter } from "./pos-management-routes";
 import { documentSignaturesRouter } from "./routes/document-signatures";
 import { secureDocumentRouter } from "./routes/secure-document-routes";
 import { qrSignatureRouter } from "./vecinos/qr-signature-routes";
+import { esgRouter } from "./esg-routes";
+import { notificationsRouter } from "./notifications-routes";
 
 // Middleware de autenticación
 function isAuthenticated(req: Request, res: Response, next: any) {
@@ -73,6 +75,12 @@ export function registerRoutes(app: Express): Server {
   
   // Ruta para el sistema de firma con QR
   app.use("/api/qr-signature", qrSignatureRouter);
+
+  // Sistema de Contabilidad Ambiental ESG
+  app.use("/api/esg", esgRouter);
+
+  // Notificaciones y envío de email
+  app.use("/api/notifications", notificationsRouter);
   
   // Ruta para servir archivos estáticos (documentos y contratos)
   app.use("/docs", express.static(path.join(process.cwd(), "docs")));
