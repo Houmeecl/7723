@@ -202,27 +202,46 @@ router.get('/profile', authenticateJWT, async (req, res) => {
   }
 });
 
-// Registrar un nuevo socio Vecinos
+// Registrar un nuevo socio Vecinos con información de pago
 router.post('/register', async (req, res) => {
-  const { username, password, fullName, email, businessName, storeAddress, storePhone } = req.body;
+  const { 
+    storeName, 
+    businessType, 
+    address, 
+    city, 
+    phone, 
+    email, 
+    ownerName, 
+    ownerRut, 
+    ownerPhone,
+    bankName,
+    accountType,
+    accountNumber,
+    planId,
+    paymentInfo
+  } = req.body;
 
   try {
-    // Verificar si el usuario ya existe
+    // Verificar si el email ya existe
     const [existingUser] = await db.select({
       id: users.id
     }).from(users).where(
-      eq(users.username, username)
+      eq(users.email, email)
     ).limit(1);
 
     if (existingUser) {
-      return res.status(400).json({ message: 'El nombre de usuario ya está en uso' });
+      return res.status(400).json({ message: 'El correo electrónico ya está registrado' });
     }
+
+    // Generar un username temporal basado en el nombre del negocio
+    const username = storeName.toLowerCase().replace(/\s+/g, '') + Math.floor(Math.random() * 1000);
+    const temporaryPassword = 'temp' + Math.random().toString(36).slice(-8);
 
     // Crear el usuario
     const [newUser] = await db.insert(users).values({
       username,
-      password, // En producción, se debería hashear
-      fullName,
+      password: temporaryPassword, // En producción, se debería hashear
+      fullName: ownerName,
       email,
       role: 'partner',
       platform: 'vecinos',
@@ -233,14 +252,22 @@ router.post('/register', async (req, res) => {
     const partnerCode = 'LOCAL-XP' + Math.floor(1000 + Math.random() * 9000);
     const [newPartner] = await db.insert(partners).values({
       userId: newUser.id,
-      name: businessName,
-      address: storeAddress,
-      phone: storePhone,
+      name: storeName,
+      address: `${address}, ${city}`,
+      phone: phone,
       code: partnerCode,
-      status: 'pending',
+      status: 'active', // Activo inmediatamente después del pago
       createdAt: new Date(),
       updatedAt: new Date()
     }).returning();
+
+    // Registrar la información de pago (en una tabla separada en producción)
+    console.log('Registro con pago:', {
+      partnerId: newPartner.id,
+      planId,
+      paymentInfo,
+      bankInfo: { bankName, accountType, accountNumber }
+    });
 
     // Crear token JWT
     const token = jwt.sign(
@@ -256,6 +283,8 @@ router.post('/register', async (req, res) => {
 
     // Enviar respuesta
     res.status(201).json({
+      success: true,
+      message: 'Registro exitoso',
       token,
       user: {
         id: newUser.id,
@@ -263,12 +292,20 @@ router.post('/register', async (req, res) => {
         role: newUser.role,
         fullName: newUser.fullName,
         email: newUser.email,
-        partnerProfile: newPartner
+        partnerProfile: {
+          ...newPartner,
+          planId,
+          businessType
+        }
       }
     });
   } catch (error) {
     console.error('Error al registrar socio:', error);
-    res.status(500).json({ message: 'Error interno del servidor' });
+    res.status(500).json({ 
+      success: false,
+      message: 'Error interno del servidor',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 });
 
