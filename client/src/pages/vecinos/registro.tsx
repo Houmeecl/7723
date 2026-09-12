@@ -20,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
+import RegistrationPayment, { PlanType } from "@/components/payments/RegistrationPayment";
 
 // Esquema de validación para el formulario
 const registrationSchema = z.object({
@@ -54,6 +55,8 @@ export default function VecinosRegistro() {
   const [_, setLocation] = useLocation();
   const [currentStep, setCurrentStep] = useState(1);
   const [submittedData, setSubmittedData] = useState<RegistrationData | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<PlanType | null>(null);
+  const [paymentData, setPaymentData] = useState<any>(null);
   
   // Configurar formulario con React Hook Form
   const form = useForm<RegistrationData>({
@@ -77,7 +80,7 @@ export default function VecinosRegistro() {
 
   // Mutación para el registro
   const registerMutation = useMutation({
-    mutationFn: async (data: RegistrationData) => {
+    mutationFn: async (data: RegistrationData & { planId?: PlanType; paymentInfo?: any }) => {
       const res = await apiRequest("POST", "/api/vecinos/register", data);
       if (!res.ok) {
         const errorData = await res.json();
@@ -87,7 +90,7 @@ export default function VecinosRegistro() {
     },
     onSuccess: (data) => {
       setSubmittedData(form.getValues());
-      setCurrentStep(4);
+      setCurrentStep(5);
       toast({
         title: "Registro exitoso",
         description: "Tu solicitud ha sido recibida y está siendo procesada.",
@@ -104,7 +107,22 @@ export default function VecinosRegistro() {
 
   // Manejar envío del formulario
   const onSubmit = (data: RegistrationData) => {
-    registerMutation.mutate(data);
+    registerMutation.mutate({
+      ...data,
+      planId: selectedPlan || undefined,
+      paymentInfo: paymentData || undefined
+    });
+  };
+
+  // Manejar completado de pago
+  const handlePaymentComplete = (planId: PlanType, payment: any) => {
+    setSelectedPlan(planId);
+    setPaymentData(payment);
+    setCurrentStep(4);
+    toast({
+      title: "Pago procesado",
+      description: "Ahora completa la información de tu negocio para finalizar.",
+    });
   };
 
   // Avanzar al siguiente paso
@@ -324,96 +342,29 @@ export default function VecinosRegistro() {
     </div>
   );
 
-  // Renderizar paso 3: Información bancaria (opcional) y términos
+  // Renderizar paso 3: Selección de plan y pago
   const renderStep3 = () => (
+    <RegistrationPayment
+      onPaymentComplete={handlePaymentComplete}
+      onCancel={() => prevStep()}
+    />
+  );
+
+  // Renderizar paso 4: Términos y condiciones
+  const renderStep4 = () => (
     <div className="space-y-4">
       <div>
-        <h3 className="text-lg font-medium mb-2">Información bancaria (opcional)</h3>
+        <h3 className="text-lg font-medium mb-2">Términos y condiciones</h3>
         <p className="text-sm text-gray-500 mb-4">
-          Esta información se utilizará para realizar transferencias de tus comisiones.
+          Por favor, revisa y acepta los términos antes de continuar
         </p>
       </div>
 
       <FormField
         control={form.control}
-        name="bankName"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Banco</FormLabel>
-            <Select 
-              onValueChange={field.onChange} 
-              defaultValue={field.value || ""}
-              disabled={registerMutation.isPending}
-            >
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona tu banco" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                <SelectItem value="banco_estado">Banco Estado</SelectItem>
-                <SelectItem value="banco_santander">Banco Santander</SelectItem>
-                <SelectItem value="banco_chile">Banco de Chile</SelectItem>
-                <SelectItem value="banco_bci">Banco BCI</SelectItem>
-                <SelectItem value="banco_scotiabank">Scotiabank</SelectItem>
-                <SelectItem value="otro">Otro</SelectItem>
-              </SelectContent>
-            </Select>
-            <FormDescription>Puedes agregar esta información más tarde</FormDescription>
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="accountType"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Tipo de cuenta</FormLabel>
-            <Select 
-              onValueChange={field.onChange} 
-              defaultValue={field.value || ""}
-              disabled={registerMutation.isPending}
-            >
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona el tipo de cuenta" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                <SelectItem value="cuenta_corriente">Cuenta Corriente</SelectItem>
-                <SelectItem value="cuenta_vista">Cuenta Vista / RUT</SelectItem>
-                <SelectItem value="cuenta_ahorro">Cuenta de Ahorro</SelectItem>
-              </SelectContent>
-            </Select>
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="accountNumber"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Número de cuenta</FormLabel>
-            <FormControl>
-              <Input 
-                placeholder="Ingresa el número de cuenta" 
-                {...field} 
-                disabled={registerMutation.isPending}
-              />
-            </FormControl>
-          </FormItem>
-        )}
-      />
-
-      <Separator className="my-6" />
-
-      <FormField
-        control={form.control}
         name="termsAccepted"
         render={({ field }) => (
-          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
             <FormControl>
               <Checkbox
                 checked={field.value}
@@ -430,18 +381,38 @@ export default function VecinosRegistro() {
           </FormItem>
         )}
       />
+
+      <div className="bg-blue-50 p-4 rounded-lg">
+        <h4 className="font-medium mb-2">Resumen de tu registro</h4>
+        <div className="space-y-2 text-sm">
+          <div className="flex justify-between">
+            <span className="text-gray-600">Negocio:</span>
+            <span className="font-medium">{form.getValues("storeName")}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Plan seleccionado:</span>
+            <span className="font-medium capitalize">{selectedPlan}</span>
+          </div>
+          {paymentData && (
+            <div className="flex justify-between">
+              <span className="text-gray-600">Monto pagado:</span>
+              <span className="font-medium">${(paymentData.amount / 100).toLocaleString('es-CL')}</span>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 
-  // Renderizar paso 4: Confirmación y siguientes pasos
-  const renderStep4 = () => (
+  // Renderizar paso 5: Confirmación y siguientes pasos
+  const renderStep5 = () => (
     <div className="text-center space-y-6">
       <div className="flex justify-center">
         <CheckCircle2 className="h-20 w-20 text-green-600" />
       </div>
       
       <div>
-        <h3 className="text-2xl font-bold">¡Solicitud enviada con éxito!</h3>
+        <h3 className="text-2xl font-bold">¡Registro completado con éxito!</h3>
         <p className="text-gray-600 mt-2">
           Gracias por registrarte como socio de Vecinos Xpress.
         </p>
@@ -501,7 +472,7 @@ export default function VecinosRegistro() {
         </div>
 
         {/* Indicador de pasos */}
-        {currentStep < 4 && (
+        {currentStep < 5 && (
           <div className="flex justify-between items-center mb-8 px-2">
             <div className={`flex items-center ${currentStep >= 1 ? 'text-blue-600' : 'text-gray-400'}`}>
               <div className={`h-8 w-8 rounded-full flex items-center justify-center border-2 ${currentStep >= 1 ? 'border-blue-600 bg-blue-50' : 'border-gray-300'}`}>
@@ -525,7 +496,16 @@ export default function VecinosRegistro() {
               <div className={`h-8 w-8 rounded-full flex items-center justify-center border-2 ${currentStep >= 3 ? 'border-blue-600 bg-blue-50' : 'border-gray-300'}`}>
                 <CreditCard className="h-4 w-4" />
               </div>
-              <span className="ml-2 text-sm font-medium hidden sm:block">Pagos</span>
+              <span className="ml-2 text-sm font-medium hidden sm:block">Pago</span>
+            </div>
+
+            <div className={`flex-grow border-t mx-2 ${currentStep >= 4 ? 'border-blue-600' : 'border-gray-300'}`} />
+            
+            <div className={`flex items-center ${currentStep >= 4 ? 'text-blue-600' : 'text-gray-400'}`}>
+              <div className={`h-8 w-8 rounded-full flex items-center justify-center border-2 ${currentStep >= 4 ? 'border-blue-600 bg-blue-50' : 'border-gray-300'}`}>
+                <CheckCircle2 className="h-4 w-4" />
+              </div>
+              <span className="ml-2 text-sm font-medium hidden sm:block">Confirmar</span>
             </div>
           </div>
         )}
@@ -536,48 +516,52 @@ export default function VecinosRegistro() {
             <CardTitle>
               {currentStep === 1 && "Información del negocio"}
               {currentStep === 2 && "Información del propietario"}
-              {currentStep === 3 && "Información de pagos"}
-              {currentStep === 4 && "Registro completo"}
+              {currentStep === 3 && "Selecciona tu plan"}
+              {currentStep === 4 && "Confirma tu registro"}
+              {currentStep === 5 && "Registro completo"}
             </CardTitle>
             <CardDescription>
               {currentStep === 1 && "Ingresa los datos de tu negocio"}
               {currentStep === 2 && "Ingresa los datos del propietario del negocio"}
-              {currentStep === 3 && "Configura cómo quieres recibir tus comisiones"}
-              {currentStep === 4 && "Tu solicitud ha sido recibida"}
+              {currentStep === 3 && "Elige el plan que mejor se adapte a tu negocio"}
+              {currentStep === 4 && "Revisa y acepta los términos antes de finalizar"}
+              {currentStep === 5 && "Tu solicitud ha sido recibida"}
             </CardDescription>
           </CardHeader>
           
           <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                {currentStep === 1 && renderStep1()}
-                {currentStep === 2 && renderStep2()}
-                {currentStep === 3 && renderStep3()}
-                {currentStep === 4 && renderStep4()}
-                
-                {currentStep < 4 && (
-                  <div className="flex justify-between mt-8">
-                    {currentStep > 1 ? (
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        onClick={prevStep}
-                        disabled={registerMutation.isPending}
-                      >
-                        Anterior
-                      </Button>
-                    ) : (
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        onClick={() => setLocation("/vecinos")}
-                        disabled={registerMutation.isPending}
-                      >
-                        Cancelar
-                      </Button>
-                    )}
-                    
-                    {currentStep < 3 ? (
+            {currentStep === 3 ? (
+              renderStep3()
+            ) : (
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  {currentStep === 1 && renderStep1()}
+                  {currentStep === 2 && renderStep2()}
+                  {currentStep === 4 && renderStep4()}
+                  {currentStep === 5 && renderStep5()}
+                  
+                  {currentStep < 3 && (
+                    <div className="flex justify-between mt-8">
+                      {currentStep > 1 ? (
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          onClick={prevStep}
+                          disabled={registerMutation.isPending}
+                        >
+                          Anterior
+                        </Button>
+                      ) : (
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          onClick={() => setLocation("/vecinos")}
+                          disabled={registerMutation.isPending}
+                        >
+                          Cancelar
+                        </Button>
+                      )}
+                      
                       <Button 
                         type="button" 
                         className="bg-blue-600 hover:bg-blue-700"
@@ -586,24 +570,37 @@ export default function VecinosRegistro() {
                       >
                         Siguiente
                       </Button>
-                    ) : (
+                    </div>
+                  )}
+
+                  {currentStep === 4 && (
+                    <div className="flex justify-between mt-8">
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={prevStep}
+                        disabled={registerMutation.isPending}
+                      >
+                        Anterior
+                      </Button>
+                      
                       <Button 
                         type="submit" 
                         className="bg-blue-600 hover:bg-blue-700"
-                        disabled={registerMutation.isPending}
+                        disabled={registerMutation.isPending || !form.watch("termsAccepted")}
                       >
-                        {registerMutation.isPending ? "Enviando..." : "Enviar solicitud"}
+                        {registerMutation.isPending ? "Enviando..." : "Finalizar registro"}
                       </Button>
-                    )}
-                  </div>
-                )}
-              </form>
-            </Form>
+                    </div>
+                  )}
+                </form>
+              </Form>
+            )}
           </CardContent>
         </Card>
         
         {/* Información adicional */}
-        {currentStep < 4 && (
+        {currentStep < 5 && (
           <div className="mt-8 text-center text-gray-600 text-sm">
             <p>¿Tienes dudas? <a href="#" className="text-blue-600 hover:underline">Contáctanos</a></p>
           </div>
