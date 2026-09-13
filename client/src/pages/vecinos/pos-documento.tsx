@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { formatRut, validateRut } from '@shared/utils/rut';
-import { CheckCircle2, FileText, Loader2, LogIn, Download, ShieldCheck } from 'lucide-react';
+import { REGIONES_CHILE } from '@shared/utils/regiones';
+import { CheckCircle2, FileText, Loader2, LogIn, Download, ShieldCheck, MapPin } from 'lucide-react';
 
 interface DocumentType {
   id: string;
@@ -15,6 +16,8 @@ interface DocumentType {
 interface GeneratedDoc {
   documentId: number;
   documentType: string;
+  provider: string;
+  region: string;
   client: { name: string; rut: string; phone?: string; email?: string };
   verificationCode: string;
   pdfUrl: string;
@@ -36,6 +39,7 @@ export default function PosDocumento() {
 
   const [docTypes, setDocTypes] = useState<DocumentType[]>([]);
   const [documentTypeId, setDocumentTypeId] = useState('');
+  const [region, setRegion] = useState('');
   const [nombre, setNombre] = useState('');
   const [rut, setRut] = useState('');
   const [telefono, setTelefono] = useState('');
@@ -101,6 +105,10 @@ export default function PosDocumento() {
       setError('Ingresa el nombre del cliente');
       return;
     }
+    if (!region) {
+      setError('Selecciona la región del proveedor');
+      return;
+    }
     setSubmitting(true);
     try {
       const res = await fetch('/api/vecinos-pos/process-document', {
@@ -111,6 +119,7 @@ export default function PosDocumento() {
         },
         body: JSON.stringify({
           documentType: documentTypeId,
+          region,
           clientInfo: { name: nombre, rut, phone: telefono, email },
         }),
       });
@@ -148,7 +157,7 @@ export default function PosDocumento() {
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-red-600">
-              <LogIn className="h-5 w-5" /> Acceso agente VecinoXpress
+              <LogIn className="h-5 w-5" /> Acceso proveedor regional VecinoXpress
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -193,10 +202,12 @@ export default function PosDocumento() {
             </div>
             <div className="rounded-lg border p-4 space-y-1 text-sm">
               <div className="flex justify-between"><span className="text-slate-500">Documento</span><span className="font-medium">{result.documentType}</span></div>
+              <div className="flex justify-between"><span className="text-slate-500">Proveedor regional</span><span className="font-medium">{result.provider}</span></div>
+              <div className="flex justify-between"><span className="text-slate-500">Región</span><span className="font-medium">{result.region}</span></div>
               <div className="flex justify-between"><span className="text-slate-500">Cliente</span><span className="font-medium">{result.client.name}</span></div>
               <div className="flex justify-between"><span className="text-slate-500">RUT</span><span className="font-medium">{result.client.rut}</span></div>
               <div className="flex justify-between"><span className="text-slate-500">Valor</span><span className="font-medium">{clp(result.amount)}</span></div>
-              <div className="flex justify-between"><span className="text-slate-500">Comisión agente</span><span className="font-medium text-green-600">{clp(result.commission)}</span></div>
+              <div className="flex justify-between"><span className="text-slate-500">Comisión proveedor</span><span className="font-medium text-green-600">{clp(result.commission)}</span></div>
             </div>
             <div className="flex gap-3">
               <a href={result.pdfUrl} target="_blank" rel="noreferrer" className="flex-1">
@@ -219,7 +230,7 @@ export default function PosDocumento() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2 text-slate-700">
             <ShieldCheck className="h-5 w-5 text-red-600" />
-            <span className="font-semibold">Agente:</span> {agentName || 'VecinoXpress'}
+            <span className="font-semibold">Proveedor regional:</span> {agentName || 'VecinoXpress'}
           </div>
           <Button variant="ghost" size="sm" onClick={handleLogout}>Salir</Button>
         </div>
@@ -231,6 +242,22 @@ export default function PosDocumento() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleGenerate} className="space-y-4">
+              <div>
+                <Label htmlFor="region" className="flex items-center gap-1">
+                  <MapPin className="h-4 w-4 text-red-600" /> Región del proveedor
+                </Label>
+                <select
+                  id="region"
+                  value={region}
+                  onChange={(e) => setRegion(e.target.value)}
+                  className="w-full mt-1 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                >
+                  <option value="">Selecciona una región...</option>
+                  {REGIONES_CHILE.map((r) => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
+              </div>
               <div>
                 <Label htmlFor="rut">RUT del cliente</Label>
                 <Input
@@ -276,7 +303,7 @@ export default function PosDocumento() {
               <Button
                 type="submit"
                 className="w-full bg-red-600 hover:bg-red-700"
-                disabled={submitting || rutValid === false}
+                disabled={submitting || rutValid === false || !region}
               >
                 {submitting ? (
                   <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Generando...</>

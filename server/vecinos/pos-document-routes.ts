@@ -7,6 +7,7 @@ import QRCode from 'qrcode';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import { pool } from '../db';
 import { validateRut, formatRut } from '@shared/utils/rut';
+import { isRegionValida } from '@shared/utils/regiones';
 
 const router = express.Router();
 
@@ -70,6 +71,7 @@ router.post(
       const clientRut = String(info.rut || '').trim();
       const clientPhone = String(info.phone || info.telefono || '').trim();
       const clientEmail = String(info.email || '').trim();
+      const region = String(body.region || info.region || '').trim();
       const documentTypeKey = String(body.documentType || body.documentTypeId || '').trim();
 
       if (clientName.length < 3) {
@@ -77,6 +79,9 @@ router.post(
       }
       if (!validateRut(clientRut)) {
         return res.status(400).json({ message: 'El RUT del cliente es inválido' });
+      }
+      if (!isRegionValida(region)) {
+        return res.status(400).json({ message: 'Debe seleccionar una región válida' });
       }
       const docType = DOCUMENT_TYPES.find(
         (d) => d.id === documentTypeKey || d.name === documentTypeKey,
@@ -117,7 +122,8 @@ router.post(
       y -= 40;
       line('CLIENTE', clientName);
       line('RUT', formatRut(clientRut));
-      line('AGENTE / PUNTO DE ATENCIÓN', agent.username);
+      line('PROVEEDOR REGIONAL', agent.username);
+      line('REGIÓN', region);
       line('FECHA DE EMISIÓN', createdAt.toLocaleString('es-CL'));
       line('VALOR', formatCLP(amount));
       line('CÓDIGO DE VERIFICACIÓN', verificationCode, 14);
@@ -149,14 +155,15 @@ router.post(
       // Persistir el documento generado.
       const insert = await pool.query(
         `INSERT INTO pos_documents
-          (partner_id, partner_username, document_type_id, document_type_name,
+          (partner_id, partner_username, region, document_type_id, document_type_name,
            client_name, client_rut, client_phone, client_email,
            verification_code, status, amount, commission, pdf_path, created_at)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
          RETURNING id`,
         [
           agent.id ?? null,
           agent.username,
+          region,
           docType.id,
           docType.name,
           clientName,
@@ -176,6 +183,8 @@ router.post(
         success: true,
         documentId: insert.rows[0].id,
         documentType: docType.name,
+        provider: agent.username,
+        region,
         client: { name: clientName, rut: formatRut(clientRut), phone: clientPhone, email: clientEmail },
         verificationCode,
         pdfUrl: pdfPath,
@@ -197,7 +206,7 @@ router.get('/documents/verify/:code', async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT document_type_name, client_name, client_rut, verification_code,
-              status, amount, pdf_path, created_at, partner_username
+              status, amount, pdf_path, created_at, partner_username, region
          FROM pos_documents WHERE verification_code = $1`,
       [req.params.code],
     );
@@ -213,7 +222,8 @@ router.get('/documents/verify/:code', async (req, res) => {
       status: doc.status,
       amount: doc.amount,
       pdfUrl: doc.pdf_path,
-      agent: doc.partner_username,
+      provider: doc.partner_username,
+      region: doc.region,
       createdAt: doc.created_at,
     });
   } catch (error) {
