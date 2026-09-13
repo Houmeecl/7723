@@ -32,4 +32,8 @@ PGPASSWORD=password psql -h 127.0.0.1 -U user -d notaryvecino -v ON_ERROR_STOP=1
   "ALTER TABLE users ADD COLUMN IF NOT EXISTS platform varchar(50) DEFAULT 'notary'; \
    ALTER TABLE users ADD COLUMN IF NOT EXISTS updated_at timestamp DEFAULT now();"
 
+# Apply incremental migrations (idempotent; each file uses IF NOT EXISTS).
+PGPASSWORD=password psql -h 127.0.0.1 -U user -d notaryvecino -v ON_ERROR_STOP=1 \
+  -f migrations/0001_pos_documents.sql
+
 echo "[setup-db] PostgreSQL ready: notaryvecino"

@@ -130,6 +130,7 @@ const LazyVecinosIndex = React.lazy(() => import("@/pages/vecinos/index"));
 const LazyVecinosLogin = React.lazy(() => import("@/pages/vecinos/login"));
 const LazyVecinosRegistro = React.lazy(() => import("@/pages/vecinos/registro"));
 const LazyVecinosPosApp = React.lazy(() => import("@/pages/vecinos/pos-app"));
+const LazyVecinosPosDocumento = React.lazy(() => import("@/pages/vecinos/pos-documento"));
 const LazyVecinosDashboard = React.lazy(() => import("@/pages/vecinos/dashboard"));
 const LazyVecinosCuenta = React.lazy(() => import("@/pages/vecinos/cuenta"));
 const LazyVecinosRetiros = React.lazy(() => import("@/pages/vecinos/retiros"));
@@ -519,6 +520,17 @@ function Router() {
         </Suspense>
       )} />
       <Route path="/vecinos/pos-app" component={WebAppPOS} />
+      {/* Flujo POS: agente genera documento a partir del RUT del cliente */}
+      <Route path="/vecinos/pos-documento" component={() => (
+        <Suspense fallback={<LazyLoadingFallback />}>
+          <LazyVecinosPosDocumento />
+        </Suspense>
+      )} />
+      <Route path="/pos-documento" component={() => (
+        <Suspense fallback={<LazyLoadingFallback />}>
+          <LazyVecinosPosDocumento />
+        </Suspense>
+      )} />
       {/* Dashboard de Vecinos (versión normal) */}
       <Route path="/vecinos/dashboard" component={() => (
         <Suspense fallback={<LazyLoadingFallback />}>

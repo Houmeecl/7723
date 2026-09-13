@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { WebSocketServer } from "ws";
 import vecinosRoutes from "./vecinos/vecinos-routes";
 import documentSignRoutes from "./vecinos/document-sign-routes";
+import posDocumentRoutes from "./vecinos/pos-document-routes";
 import express, { Request, Response } from "express";
 import path from "path";
 import { setupAuth, hashPassword } from "./auth";
@@ -39,6 +40,9 @@ export function registerRoutes(app: Express): Server {
   
   // Rutas para firma de documentos de Vecinos con Zoho Sign
   app.use("/api/vecinos/document-sign", documentSignRoutes);
+
+  // Flujo POS: agente genera documento a partir del RUT del cliente
+  app.use("/api/vecinos-pos", posDocumentRoutes);
 
 
   // Rutas para verificación de identidad
