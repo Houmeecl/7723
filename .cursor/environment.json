@@ -1,0 +1,21 @@
+{
+  "name": "NotaryVecino",
+  "install": "bash .cursor/install.sh",
+  "start": "bash .cursor/start.sh",
+  "terminals": [
+    {
+      "name": "App (:5000)",
+      "command": "bash .cursor/run-server.sh",
+      "description": "Express API + built client SPA served same-origin on http://localhost:5000. Full-stack app including login/auth against the local Postgres."
+    },
+    {
+      "name": "Client HMR (:5173)",
+      "command": "cd client && npm run dev -- --host 0.0.0.0 --port 5173",
+      "description": "Vite dev server with hot-module reload for fast frontend iteration on http://localhost:5173. This is the app that Vercel deploys."
+    }
+  ],
+  "ports": [
+    { "name": "app", "port": 5000 },
+    { "name": "client-hmr", "port": 5173 }
+  ]
+}
